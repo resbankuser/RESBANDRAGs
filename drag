@@ -4,43 +4,67 @@ local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
 -- [[ 0. KEY SYSTEM SETTINGS ]]
-local keyURL = "https://direct-link.net/5163393/AQxuWZ9ZjX0o
+local secretLink = "68747470733a2f2f706173746562696e2e636f6d2f7261772f4e32345a38506a34"
+local linkvertiseURL = "https://direct-link.net/5163393/AQxuWZ9ZjX0o"
+
+local function decode(data)
+    local str = ""
+    for i = 1, #data, 2 do
+        str = str .. string.char(tonumber(data:sub(i, i+1), 16))
+    end
+    return str
+end
+
+local keyURL = decode(secretLink)
 local keyVerified = false
 
 -- [[ 1. INTRO & KEY UI ]]
 local introGui = Instance.new("ScreenGui")
-introGui.DisplayOrder = 999
+introGui.Name = "IntroSystem"
+introGui.DisplayOrder = 10 -- ให้อยู่หน้าสุดตอนเริ่ม
 introGui.Parent = player:WaitForChild("PlayerGui")
 
 local blackOut = Instance.new("Frame")
 blackOut.Size = UDim2.new(1, 0, 1, 0)
 blackOut.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+blackOut.ZIndex = 1
 blackOut.Parent = introGui
 
 local keyFrame = Instance.new("Frame")
-keyFrame.Size = UDim2.new(0, 300, 0, 150)
-keyFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+keyFrame.Size = UDim2.new(0, 300, 0, 200)
+keyFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
 keyFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-keyFrame.BorderSizePixel = 0
-keyFrame.BackgroundTransparency = 1 
+keyFrame.BackgroundTransparency = 1
+keyFrame.ZIndex = 2
 keyFrame.Parent = introGui
 
 local keyInput = Instance.new("TextBox")
 keyInput.Size = UDim2.new(0, 260, 0, 40)
-keyInput.Position = UDim2.new(0.5, -130, 0.4, -20)
-keyInput.PlaceholderText = "ENTER DAILY KEY..."
+keyInput.Position = UDim2.new(0.5, -130, 0.3, -20)
+keyInput.PlaceholderText = "PASTE KEY HERE..."
 keyInput.Text = ""
 keyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 keyInput.TextColor3 = Color3.new(1, 1, 1)
+keyInput.ZIndex = 3
 keyInput.Parent = keyFrame
 
 local submitBtn = Instance.new("TextButton")
 submitBtn.Size = UDim2.new(0, 260, 0, 40)
-submitBtn.Position = UDim2.new(0.5, -130, 0.7, 0)
+submitBtn.Position = UDim2.new(0.5, -130, 0.55, 0)
 submitBtn.Text = "CHECK KEY"
 submitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
 submitBtn.TextColor3 = Color3.new(1, 1, 1)
+submitBtn.ZIndex = 3
 submitBtn.Parent = keyFrame
+
+local getBtn = Instance.new("TextButton")
+getBtn.Size = UDim2.new(0, 260, 0, 30)
+getBtn.Position = UDim2.new(0.5, -130, 0.8, 0)
+getBtn.Text = "GET KEY (Linkvertise)"
+getBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
+getBtn.TextColor3 = Color3.new(1, 1, 1)
+getBtn.ZIndex = 3
+getBtn.Parent = keyFrame
 
 local introText = Instance.new("TextLabel")
 introText.Size = UDim2.new(1, 0, 0, 100)
@@ -51,27 +75,31 @@ introText.TextColor3 = Color3.new(1, 1, 1)
 introText.TextSize = 80
 introText.Font = Enum.Font.SourceSansBold
 introText.TextTransparency = 1
+introText.ZIndex = 4
 introText.Parent = introGui
 
+-- Animation Intro
 task.spawn(function()
     tweenService:Create(introText, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
     task.wait(1.5)
-    tweenService:Create(introText, TweenInfo.new(0.5), {Position = UDim2.new(0, 0, 0.2, 0)}):Play()
+    tweenService:Create(introText, TweenInfo.new(0.5), {Position = UDim2.new(0, 0, 0.15, 0)}):Play()
     task.wait(0.5)
     tweenService:Create(keyFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
 end)
 
--- [[ 2. UI SETTINGS (Main Script) ]]
+-- [[ 2. MAIN SCRIPT UI (AutoPilot) ]]
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AutoPilot_V25"
 screenGui.Enabled = false 
-screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 5 -- อยู่หลัง Intro เล็กน้อย
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 220, 0, 320)
 mainFrame.Position = UDim2.new(0.5, -110, 0.5, -160)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainFrame.Active = true -- ทำให้กดได้
+mainFrame.Draggable = true -- ให้ลากไปมาได้
 mainFrame.Parent = screenGui
 
 local statusLabel = Instance.new("TextLabel")
@@ -97,6 +125,7 @@ local function createInput(label, default, yPos)
     b.Text = tostring(default)
     b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     b.TextColor3 = Color3.new(1, 1, 1)
+    b.ClearTextOnFocus = false -- ไม่ลบข้อความเวลาจะพิมพ์ใหม่
     b.Parent = mainFrame
     return b
 end
@@ -112,51 +141,43 @@ hintLabel.TextColor3 = Color3.new(0.6, 0.6, 0.6)
 hintLabel.BackgroundTransparency = 1
 hintLabel.Parent = mainFrame
 
--- [[ 3. KEY CHECK LOGIC ]]
-submitBtn.MouseButton1Click:Connect(function()
-    submitBtn.Text = "CHECKING..."
-    
-    -- ดึงคีย์จาก GitHub
-    local success, currentKey = pcall(function()
-        return game:HttpGet(keyURL)
-    end)
-    
-    if success then
-        currentKey = currentKey:gsub("%s+", "") -- ลบช่องว่าง/บรรทัดใหม่
-        
-        if keyInput.Text == currentKey then
-            keyVerified = true
-            submitBtn.Text = "SUCCESS!"
-            submitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-            task.wait(0.5)
-            
-            tweenService:Create(introText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-            tweenService:Create(blackOut, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-            keyFrame:Destroy()
-            task.wait(0.5)
-            introGui:Destroy()
-            screenGui.Enabled = true
-        else
-            keyInput.Text = ""
-            keyInput.PlaceholderText = "WRONG KEY OR EXPIRED!"
-            submitBtn.Text = "INVALID"
-            submitBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-            task.wait(1)
-            submitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-            submitBtn.Text = "CHECK KEY"
-        end
-    else
-        submitBtn.Text = "CONNECTION ERROR"
-        task.wait(1)
-        submitBtn.Text = "CHECK KEY"
-    end
-end)
-
--- [[ 4. SCRIPT LOGIC ]]
+-- [[ 3. LOGIC & CONNECTIONS ]]
 local scriptActive = true
 local autoMode = false
 local nitroPower = 3
 local targetMaxSpeed = 500
+
+getBtn.MouseButton1Click:Connect(function()
+    setclipboard(linkvertiseURL)
+    getBtn.Text = "COPIED TO CLIPBOARD!"
+    task.wait(2)
+    getBtn.Text = "GET KEY (Linkvertise)"
+end)
+
+submitBtn.MouseButton1Click:Connect(function()
+    submitBtn.Text = "CHECKING..."
+    local success, currentKey = pcall(function() return game:HttpGet(keyURL) end)
+    
+    if success and keyInput.Text == currentKey:gsub("%s+", "") then
+        keyVerified = true
+        submitBtn.Text = "SUCCESS!"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        
+        task.wait(0.5)
+        screenGui.Enabled = true -- เปิด UI หลัก
+        introGui:Destroy() -- ลบหน้า Intro ทิ้งทันที
+    else
+        submitBtn.Text = "INVALID KEY"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        task.wait(1)
+        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+        submitBtn.Text = "CHECK KEY"
+    end
+end)
+
+-- ฟังก์ชันดึงค่าจาก UI
+powerInput.FocusLost:Connect(function() nitroPower = tonumber(powerInput.Text) or 3 end)
+speedInput.FocusLost:Connect(function() targetMaxSpeed = tonumber(speedInput.Text) or 500 end)
 
 UIS.InputBegan:Connect(function(input, processed)
     if not scriptActive or not keyVerified or processed then return end
@@ -172,20 +193,15 @@ UIS.InputBegan:Connect(function(input, processed)
     end
 end)
 
-powerInput.FocusLost:Connect(function() nitroPower = tonumber(powerInput.Text) or 3 end)
-speedInput.FocusLost:Connect(function() targetMaxSpeed = tonumber(speedInput.Text) or 500 end)
-
--- [[ 5. PHYSICS ENGINE ]]
+-- Physics
 runService.Heartbeat:Connect(function()
     if not scriptActive or not autoMode or not keyVerified then return end
     local char = player.Character
     local seat = char and char:FindFirstChild("Humanoid") and char.Humanoid.SeatPart
-    
     if seat and seat:IsA("VehicleSeat") then
         seat.MaxSpeed = targetMaxSpeed
         local velocity = seat.AssemblyLinearVelocity
         local speed = velocity.Magnitude
-        
         if speed < targetMaxSpeed then
             seat:ApplyImpulse(seat.CFrame.LookVector * (seat.AssemblyMass * nitroPower * 0.45))
             local lookV = seat.CFrame.LookVector
