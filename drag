@@ -1,0 +1,185 @@
+local player = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local tweenService = game:GetService("TweenService")
+
+-- [[ 0. KEY SYSTEM SETTINGS ]]
+local correctKey = "resbank212222" -- ตั้งรหัสผ่านของคุณที่นี่
+local keyVerified = false
+
+-- [[ 1. INTRO & KEY UI ]]
+local introGui = Instance.new("ScreenGui")
+introGui.DisplayOrder = 999
+introGui.Parent = player:WaitForChild("PlayerGui")
+
+local blackOut = Instance.new("Frame")
+blackOut.Size = UDim2.new(1, 0, 1, 0)
+blackOut.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+blackOut.Parent = introGui
+
+-- ส่วนของช่องกรอก Key
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 300, 0, 150)
+keyFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+keyFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+keyFrame.BorderSizePixel = 0
+keyFrame.BackgroundTransparency = 1 -- ซ่อนไว้ก่อนรอ Intro จบ
+keyFrame.Parent = introGui
+
+local keyInput = Instance.new("TextBox")
+keyInput.Size = UDim2.new(0, 260, 0, 40)
+keyInput.Position = UDim2.new(0.5, -130, 0.4, -20)
+keyInput.PlaceholderText = "ENTER KEY HERE..."
+keyInput.Text = ""
+keyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+keyInput.TextColor3 = Color3.new(1, 1, 1)
+keyInput.Parent = keyFrame
+
+local submitBtn = Instance.new("TextButton")
+submitBtn.Size = UDim2.new(0, 260, 0, 40)
+submitBtn.Position = UDim2.new(0.5, -130, 0.7, 0)
+submitBtn.Text = "ACTIVATE"
+submitBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+submitBtn.TextColor3 = Color3.new(1, 1, 1)
+submitBtn.Parent = keyFrame
+
+local introText = Instance.new("TextLabel")
+introText.Size = UDim2.new(1, 0, 0, 100)
+introText.Position = UDim2.new(0, 0, 0.5, -50)
+introText.BackgroundTransparency = 1
+introText.Text = "RES.BANK"
+introText.TextColor3 = Color3.new(1, 1, 1)
+introText.TextSize = 80
+introText.Font = Enum.Font.SourceSansBold
+introText.TextTransparency = 1
+introText.Parent = introGui
+
+-- จัดการ Intro และแสดงที่กรอก Key
+task.spawn(function()
+    tweenService:Create(introText, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+    task.wait(1.5)
+    tweenService:Create(introText, TweenInfo.new(0.5), {Position = UDim2.new(0, 0, 0.2, 0)}):Play()
+    task.wait(0.5)
+    tweenService:Create(keyFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+end)
+
+-- [[ 2. UI SETTINGS (Main Script) ]]
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoPilot_V25"
+screenGui.Enabled = false -- ปิดไว้ก่อนจนกว่า Key จะผ่าน
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- (ใส่โค้ดหน้าตา UI ของคุณที่นี่)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 220, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -110, 0.5, -160)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainFrame.Parent = screenGui
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0, 200, 0, 40)
+statusLabel.Position = UDim2.new(0, 10, 0, 10)
+statusLabel.Text = "🔘 AUTO-PILOT: OFF"
+statusLabel.TextColor3 = Color3.new(1, 0.3, 0.3)
+statusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+statusLabel.Parent = mainFrame
+
+local function createInput(label, default, yPos)
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0, 200, 0, 20)
+    l.Position = UDim2.new(0, 10, 0, yPos)
+    l.Text = label
+    l.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    l.BackgroundTransparency = 1
+    l.Parent = mainFrame
+    
+    local b = Instance.new("TextBox")
+    b.Size = UDim2.new(0, 180, 0, 30)
+    b.Position = UDim2.new(0, 10, 0, yPos + 20)
+    b.Text = tostring(default)
+    b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Parent = mainFrame
+    return b
+end
+
+local powerInput = createInput("Nitro Power (1-5):", "3", 60)
+local speedInput = createInput("Target Speed (KM/H):", "500", 120)
+
+local hintLabel = Instance.new("TextLabel")
+hintLabel.Size = UDim2.new(0, 200, 0, 60)
+hintLabel.Position = UDim2.new(0, 10, 0, 180)
+hintLabel.Text = "⌨️ [X] Toggle Auto\n⌨️ [M] Hide/Show Menu\n⌨️ [K] Destroy Script"
+hintLabel.TextColor3 = Color3.new(0.6, 0.6, 0.6)
+hintLabel.BackgroundTransparency = 1
+hintLabel.Parent = mainFrame
+
+-- [[ 3. KEY CHECK LOGIC ]]
+submitBtn.MouseButton1Click:Connect(function()
+    if keyInput.Text == correctKey then
+        keyVerified = true
+        submitBtn.Text = "SUCCESS!"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        task.wait(0.5)
+        
+        -- ปิดหน้า Key และเปิดหน้า Script จริง
+        tweenService:Create(introText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+        tweenService:Create(blackOut, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        keyFrame:Destroy()
+        task.wait(0.5)
+        introGui:Destroy()
+        screenGui.Enabled = true
+    else
+        keyInput.Text = ""
+        keyInput.PlaceholderText = "INVALID KEY!"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        task.wait(1)
+        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        submitBtn.Text = "ACTIVATE"
+    end
+end)
+
+-- [[ 4. SCRIPT LOGIC ]]
+local scriptActive = true
+local autoMode = false
+local nitroPower = 3
+local targetMaxSpeed = 500
+
+UIS.InputBegan:Connect(function(input, processed)
+    if not scriptActive or not keyVerified or processed then return end
+    if input.KeyCode == Enum.KeyCode.X then
+        autoMode = not autoMode
+        statusLabel.Text = autoMode and "🚀 AUTO-PILOT: ON" or "🔘 AUTO-PILOT: OFF"
+        statusLabel.TextColor3 = autoMode and Color3.new(0.3, 1, 0.3) or Color3.new(1, 0.3, 0.3)
+    elseif input.KeyCode == Enum.KeyCode.M then
+        mainFrame.Visible = not mainFrame.Visible
+    elseif input.KeyCode == Enum.KeyCode.K then
+        scriptActive = false
+        screenGui:Destroy()
+    end
+end)
+
+powerInput.FocusLost:Connect(function() nitroPower = tonumber(powerInput.Text) or 3 end)
+speedInput.FocusLost:Connect(function() targetMaxSpeed = tonumber(speedInput.Text) or 500 end)
+
+-- [[ 5. PHYSICS ENGINE ]]
+runService.Heartbeat:Connect(function()
+    if not scriptActive or not autoMode or not keyVerified then return end
+    local char = player.Character
+    local seat = char and char:FindFirstChild("Humanoid") and char.Humanoid.SeatPart
+    
+    if seat and seat:IsA("VehicleSeat") then
+        seat.MaxSpeed = targetMaxSpeed
+        local velocity = seat.AssemblyLinearVelocity
+        local speed = velocity.Magnitude
+        
+        if speed < targetMaxSpeed then
+            seat:ApplyImpulse(seat.CFrame.LookVector * (seat.AssemblyMass * nitroPower * 0.45))
+            local lookV = seat.CFrame.LookVector
+            seat.AssemblyLinearVelocity = Vector3.new(lookV.X * speed, velocity.Y, lookV.Z * speed)
+            seat:ApplyImpulse(Vector3.new(0, -speed * (seat.AssemblyMass / 40), 0))
+            seat.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        end
+    end
+end
