@@ -4,7 +4,7 @@ local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
 -- [[ 0. KEY SYSTEM SETTINGS ]]
-local correctKey = "resbank212222" -- ตั้งรหัสผ่านของคุณที่นี่
+local correctKey = "TAWAN-POWER-2026" -- ตั้งรหัสผ่านของคุณที่นี่
 local keyVerified = false
 
 -- [[ 1. INTRO & KEY UI ]]
@@ -182,4 +182,4 @@ runService.Heartbeat:Connect(function()
             seat.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
         end
     end
-end
+end)
