@@ -4,7 +4,7 @@ local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
 -- [[ 0. KEY SYSTEM SETTINGS ]]
-local keyURL = "https://pastebin.com/raw/N24Z8Pj4"
+local keyURL = "https://direct-link.net/5163393/AQxuWZ9ZjX0o
 local keyVerified = false
 
 -- [[ 1. INTRO & KEY UI ]]
