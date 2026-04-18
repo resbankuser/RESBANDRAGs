@@ -4,7 +4,7 @@ local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
 -- [[ 0. KEY SYSTEM SETTINGS ]]
-local keyURL = "https://raw.githubusercontent.com/resbankuser/RESBANDRAGs/main/key.txt" -- เปลี่ยนลิงก์ตรงนี้ให้เป็นลิงก์ Raw ของคุณ
+local keyURL = "https://pastebin.com/raw/N24Z8Pj4"
 local keyVerified = false
 
 -- [[ 1. INTRO & KEY UI ]]
