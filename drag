@@ -3,9 +3,10 @@ local runService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
--- [[ SETTINGS ]]
-local secretLink = "https://link-hub.net/5163393/x3LnNWqJVTKq"
-local linkvertiseURL = "https://pastebin.com/VxQHEfSd"
+-- [[ SETTINGS ]] 
+-- ใช้ Hex ของลิงก์ RAW เพื่อให้ HttpGet ดึงข้อความมาเช็คได้โดยตรง
+local secretLink = "68747470733a2f2f706173746562696e2e636f6d2f7261772f5678514845665364"
+local linkvertiseURL = "https://link-hub.net/5163393/x3LnNWqJVTKq"
 
 local function decode(data)
     local str = ""
@@ -204,7 +205,8 @@ submitBtn.MouseButton1Click:Connect(function()
     submitBtn.Text = "VERIFYING..."
     local success, currentKey = pcall(function() return game:HttpGet(keyURL) end)
     
-    if success and keyInput.Text == currentKey:gsub("%s+", "") then
+    -- ทำการลบช่องว่างออกเพื่อให้เช็คได้แม่นยำ
+    if success and keyInput.Text:gsub("%s+", "") == currentKey:gsub("%s+", "") then
         keyVerified = true
         submitBtn.Text = "AUTHORIZED"
         submitBtn.BackgroundColor3 = Color3.fromRGB(40, 200, 100)
