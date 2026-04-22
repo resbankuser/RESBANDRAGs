@@ -5,7 +5,7 @@ local tweenService = game:GetService("TweenService")
 
 -- [[ SETTINGS ]]
 local secretLink = "68747470733a2f2f706173746562696e2e636f6d2f7261772f4e32345a38506a34"
-local linkvertiseURL = "https://direct-link.net/5163393/AQxuWZ9ZjX0o"
+local linkvertiseURL = "https://pastebin.com/VxQHEfSd"
 
 local function decode(data)
     local str = ""
