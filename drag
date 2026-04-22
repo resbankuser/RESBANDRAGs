@@ -3,7 +3,7 @@ local runService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
--- [[ 0. KEY SYSTEM SETTINGS ]]
+-- [[ SETTINGS ]]
 local secretLink = "68747470733a2f2f706173746562696e2e636f6d2f7261772f4e32345a38506a34"
 local linkvertiseURL = "https://direct-link.net/5163393/AQxuWZ9ZjX0o"
 
@@ -18,52 +18,71 @@ end
 local keyURL = decode(secretLink)
 local keyVerified = false
 
+-- [[ UTILS: Create UI Elements ]]
+local function createCorner(parent, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = radius or UDim.new(0, 8)
+    corner.Parent = parent
+end
+
+local function createStroke(parent, color, thickness)
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color or Color3.fromRGB(255, 255, 255)
+    stroke.Thickness = thickness or 1
+    stroke.Transparency = 0.8
+    stroke.Parent = parent
+end
+
 -- [[ 1. INTRO & KEY UI ]]
 local introGui = Instance.new("ScreenGui")
 introGui.Name = "IntroSystem"
-introGui.DisplayOrder = 10 -- ให้อยู่หน้าสุดตอนเริ่ม
+introGui.DisplayOrder = 10
 introGui.Parent = player:WaitForChild("PlayerGui")
 
 local blackOut = Instance.new("Frame")
 blackOut.Size = UDim2.new(1, 0, 1, 0)
-blackOut.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-blackOut.ZIndex = 1
+blackOut.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
 blackOut.Parent = introGui
 
 local keyFrame = Instance.new("Frame")
-keyFrame.Size = UDim2.new(0, 300, 0, 200)
-keyFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-keyFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+keyFrame.Size = UDim2.new(0, 320, 0, 240)
+keyFrame.Position = UDim2.new(0.5, -160, 0.5, -120)
+keyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 keyFrame.BackgroundTransparency = 1
-keyFrame.ZIndex = 2
 keyFrame.Parent = introGui
+createCorner(keyFrame)
+createStroke(keyFrame, Color3.fromRGB(100, 100, 100))
 
 local keyInput = Instance.new("TextBox")
-keyInput.Size = UDim2.new(0, 260, 0, 40)
-keyInput.Position = UDim2.new(0.5, -130, 0.3, -20)
-keyInput.PlaceholderText = "PASTE KEY HERE..."
+keyInput.Size = UDim2.new(0, 280, 0, 45)
+keyInput.Position = UDim2.new(0.5, -140, 0.35, -20)
+keyInput.PlaceholderText = "ENTER ACCESS KEY..."
 keyInput.Text = ""
-keyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+keyInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 keyInput.TextColor3 = Color3.new(1, 1, 1)
-keyInput.ZIndex = 3
+keyInput.Font = Enum.Font.GothamMedium
+keyInput.TextSize = 14
 keyInput.Parent = keyFrame
+createCorner(keyInput)
 
 local submitBtn = Instance.new("TextButton")
-submitBtn.Size = UDim2.new(0, 260, 0, 40)
-submitBtn.Position = UDim2.new(0.5, -130, 0.55, 0)
-submitBtn.Text = "CHECK KEY"
-submitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+submitBtn.Size = UDim2.new(0, 280, 0, 45)
+submitBtn.Position = UDim2.new(0.5, -140, 0.6, 0)
+submitBtn.Text = "VERIFY SYSTEM"
+submitBtn.BackgroundColor3 = Color3.fromRGB(0, 102, 255)
 submitBtn.TextColor3 = Color3.new(1, 1, 1)
-submitBtn.ZIndex = 3
+submitBtn.Font = Enum.Font.GothamBold
 submitBtn.Parent = keyFrame
+createCorner(submitBtn)
 
 local getBtn = Instance.new("TextButton")
-getBtn.Size = UDim2.new(0, 260, 0, 30)
-getBtn.Position = UDim2.new(0.5, -130, 0.8, 0)
-getBtn.Text = "GET KEY (Linkvertise)"
-getBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
-getBtn.TextColor3 = Color3.new(1, 1, 1)
-getBtn.ZIndex = 3
+getBtn.Size = UDim2.new(0, 280, 0, 35)
+getBtn.Position = UDim2.new(0.5, -140, 0.82, 0)
+getBtn.Text = "GET KEY"
+getBtn.BackgroundTransparency = 1
+getBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
+getBtn.Font = Enum.Font.Gotham
+getBtn.TextSize = 12
 getBtn.Parent = keyFrame
 
 local introText = Instance.new("TextLabel")
@@ -72,119 +91,152 @@ introText.Position = UDim2.new(0, 0, 0.5, -50)
 introText.BackgroundTransparency = 1
 introText.Text = "RES.BANK"
 introText.TextColor3 = Color3.new(1, 1, 1)
-introText.TextSize = 80
-introText.Font = Enum.Font.SourceSansBold
+introText.TextSize = 60
+introText.Font = Enum.Font.GothamBold
 introText.TextTransparency = 1
-introText.ZIndex = 4
 introText.Parent = introGui
 
 -- Animation Intro
 task.spawn(function()
-    tweenService:Create(introText, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+    tweenService:Create(introText, TweenInfo.new(1), {TextTransparency = 0}):Play()
     task.wait(1.5)
-    tweenService:Create(introText, TweenInfo.new(0.5), {Position = UDim2.new(0, 0, 0.15, 0)}):Play()
-    task.wait(0.5)
-    tweenService:Create(keyFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+    tweenService:Create(introText, TweenInfo.new(0.8, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 0, 0.15, 0), TextSize = 40}):Play()
+    task.wait(0.6)
+    tweenService:Create(keyFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0.1}):Play()
 end)
 
--- [[ 2. MAIN SCRIPT UI (AutoPilot) ]]
+-- [[ 2. MAIN SCRIPT UI ]]
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AutoPilot_V25"
 screenGui.Enabled = false 
-screenGui.DisplayOrder = 5 -- อยู่หลัง Intro เล็กน้อย
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 320)
-mainFrame.Position = UDim2.new(0.5, -110, 0.5, -160)
+mainFrame.Size = UDim2.new(0, 240, 0, 360)
+mainFrame.Position = UDim2.new(0.5, -120, 0.5, -180)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-mainFrame.Active = true -- ทำให้กดได้
-mainFrame.Draggable = true -- ให้ลากไปมาได้
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
 mainFrame.Parent = screenGui
+createCorner(mainFrame, UDim.new(0, 12))
+createStroke(mainFrame, Color3.fromRGB(255, 255, 255), 1)
+
+-- Gradient Background
+local grad = Instance.new("UIGradient")
+grad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 25)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
+})
+grad.Rotation = 45
+grad.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Text = "AUTOPILOT V2.5"
+titleLabel.TextColor3 = Color3.fromRGB(0, 162, 255)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.BackgroundTransparency = 1
+titleLabel.Parent = mainFrame
 
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 200, 0, 40)
-statusLabel.Position = UDim2.new(0, 10, 0, 10)
-statusLabel.Text = "🔘 AUTO-PILOT: OFF"
-statusLabel.TextColor3 = Color3.new(1, 0.3, 0.3)
-statusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+statusLabel.Size = UDim2.new(0, 210, 0, 35)
+statusLabel.Position = UDim2.new(0, 15, 0, 45)
+statusLabel.Text = "READY TO BOOST"
+statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+statusLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.TextSize = 12
 statusLabel.Parent = mainFrame
+createCorner(statusLabel)
 
-local function createInput(label, default, yPos)
+local function createInputModern(label, default, yPos)
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0, 200, 0, 20)
-    l.Position = UDim2.new(0, 10, 0, yPos)
-    l.Text = label
-    l.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    l.Size = UDim2.new(0, 210, 0, 20)
+    l.Position = UDim2.new(0, 15, 0, yPos)
+    l.Text = label:upper()
+    l.TextColor3 = Color3.fromRGB(100, 100, 100)
+    l.Font = Enum.Font.GothamBold
+    l.TextSize = 10
+    l.TextXAlignment = Enum.TextXAlignment.Left
     l.BackgroundTransparency = 1
     l.Parent = mainFrame
     
     local b = Instance.new("TextBox")
-    b.Size = UDim2.new(0, 180, 0, 30)
-    b.Position = UDim2.new(0, 10, 0, yPos + 20)
+    b.Size = UDim2.new(0, 210, 0, 35)
+    b.Position = UDim2.new(0, 15, 0, yPos + 20)
     b.Text = tostring(default)
-    b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     b.TextColor3 = Color3.new(1, 1, 1)
-    b.ClearTextOnFocus = false -- ไม่ลบข้อความเวลาจะพิมพ์ใหม่
+    b.Font = Enum.Font.GothamMedium
     b.Parent = mainFrame
+    createCorner(b)
     return b
 end
 
-local powerInput = createInput("Nitro Power (1-5):", "3", 60)
-local speedInput = createInput("Target Speed (KM/H):", "500", 120)
+local powerInput = createInputModern("Nitro Intensity", "2", 90)
+local speedInput = createInputModern("Max Speed (KM/H)", "280", 160)
 
 local hintLabel = Instance.new("TextLabel")
-hintLabel.Size = UDim2.new(0, 200, 0, 60)
-hintLabel.Position = UDim2.new(0, 10, 0, 180)
-hintLabel.Text = "⌨️ [X] Toggle Auto\n⌨️ [M] Hide/Show Menu\n⌨️ [K] Destroy Script"
-hintLabel.TextColor3 = Color3.new(0.6, 0.6, 0.6)
+hintLabel.Size = UDim2.new(0, 210, 0, 80)
+hintLabel.Position = UDim2.new(0, 15, 0, 240)
+hintLabel.Text = "HOLD [X] - ACTIVATE\n[M] - TOGGLE MENU\n[K] - TERMINATE"
+hintLabel.TextColor3 = Color3.fromRGB(80, 80, 80)
+hintLabel.Font = Enum.Font.Gotham
+hintLabel.TextSize = 11
 hintLabel.BackgroundTransparency = 1
 hintLabel.Parent = mainFrame
 
--- [[ 3. LOGIC & CONNECTIONS ]]
+-- [[ LOGIC ]]
 local scriptActive = true
-local autoMode = false
-local nitroPower = 3
-local targetMaxSpeed = 500
+local isBoosting = false
+local nitroPower = 2
+local targetMaxSpeed = 280
 
 getBtn.MouseButton1Click:Connect(function()
     setclipboard(linkvertiseURL)
-    getBtn.Text = "COPIED TO CLIPBOARD!"
+    getBtn.Text = "LINK COPIED!"
     task.wait(2)
-    getBtn.Text = "GET KEY (Linkvertise)"
+    getBtn.Text = "GET KEY"
 end)
 
 submitBtn.MouseButton1Click:Connect(function()
-    submitBtn.Text = "CHECKING..."
+    submitBtn.Text = "VERIFYING..."
     local success, currentKey = pcall(function() return game:HttpGet(keyURL) end)
     
     if success and keyInput.Text == currentKey:gsub("%s+", "") then
         keyVerified = true
-        submitBtn.Text = "SUCCESS!"
-        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        submitBtn.Text = "AUTHORIZED"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(40, 200, 100)
+        task.wait(0.8)
         
+        -- Transition out
+        tweenService:Create(blackOut, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
+        tweenService:Create(keyFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -160, 0.6, 0), BackgroundTransparency = 1}):Play()
         task.wait(0.5)
-        screenGui.Enabled = true -- เปิด UI หลัก
-        introGui:Destroy() -- ลบหน้า Intro ทิ้งทันที
+        
+        screenGui.Enabled = true
+        introGui:Destroy()
     else
-        submitBtn.Text = "INVALID KEY"
-        submitBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        task.wait(1)
-        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-        submitBtn.Text = "CHECK KEY"
+        submitBtn.Text = "ACCESS DENIED"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        task.wait(1.5)
+        submitBtn.Text = "VERIFY SYSTEM"
+        submitBtn.BackgroundColor3 = Color3.fromRGB(0, 102, 255)
     end
 end)
 
--- ฟังก์ชันดึงค่าจาก UI
-powerInput.FocusLost:Connect(function() nitroPower = tonumber(powerInput.Text) or 3 end)
-speedInput.FocusLost:Connect(function() targetMaxSpeed = tonumber(speedInput.Text) or 500 end)
+-- Update logic
+powerInput.FocusLost:Connect(function() nitroPower = tonumber(powerInput.Text) or 2 end)
+speedInput.FocusLost:Connect(function() targetMaxSpeed = tonumber(speedInput.Text) or 280 end)
 
 UIS.InputBegan:Connect(function(input, processed)
     if not scriptActive or not keyVerified or processed then return end
     if input.KeyCode == Enum.KeyCode.X then
-        autoMode = not autoMode
-        statusLabel.Text = autoMode and "🚀 AUTO-PILOT: ON" or "🔘 AUTO-PILOT: OFF"
-        statusLabel.TextColor3 = autoMode and Color3.new(0.3, 1, 0.3) or Color3.new(1, 0.3, 0.3)
+        isBoosting = true
+        statusLabel.Text = "⚡ BOOST ACTIVE "
+        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+        tweenService:Create(statusLabel, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 50, 20)}):Play()
     elseif input.KeyCode == Enum.KeyCode.M then
         mainFrame.Visible = not mainFrame.Visible
     elseif input.KeyCode == Enum.KeyCode.K then
@@ -193,21 +245,31 @@ UIS.InputBegan:Connect(function(input, processed)
     end
 end)
 
--- Physics
+UIS.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.X then
+        isBoosting = false
+        statusLabel.Text = "กดบูสสสสสสส"
+        statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+        tweenService:Create(statusLabel, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 25)}):Play()
+    end
+end)
+
 runService.Heartbeat:Connect(function()
-    if not scriptActive or not autoMode or not keyVerified then return end
+    if not scriptActive or not isBoosting or not keyVerified then return end
     local char = player.Character
     local seat = char and char:FindFirstChild("Humanoid") and char.Humanoid.SeatPart
+    
     if seat and seat:IsA("VehicleSeat") then
-        seat.MaxSpeed = targetMaxSpeed
         local velocity = seat.AssemblyLinearVelocity
-        local speed = velocity.Magnitude
+        local speed = (velocity * Vector3.new(1, 0, 1)).Magnitude 
+        
+        seat.MaxSpeed = targetMaxSpeed + 15
+        
         if speed < targetMaxSpeed then
-            seat:ApplyImpulse(seat.CFrame.LookVector * (seat.AssemblyMass * nitroPower * 0.45))
-            local lookV = seat.CFrame.LookVector
-            seat.AssemblyLinearVelocity = Vector3.new(lookV.X * speed, velocity.Y, lookV.Z * speed)
-            seat:ApplyImpulse(Vector3.new(0, -speed * (seat.AssemblyMass / 40), 0))
-            seat.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+            local accelFactor = 0.22 
+            seat:ApplyImpulse(seat.CFrame.LookVector * (seat.AssemblyMass * nitroPower * accelFactor))
+            seat:ApplyImpulse(Vector3.new(0, -seat.AssemblyMass * 0.4, 0))
+            seat.AssemblyAngularVelocity = seat.AssemblyAngularVelocity * 0.92
         end
     end
 end)
