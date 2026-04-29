@@ -3,29 +3,6 @@ local runService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local tweenService = game:GetService("TweenService")
 
--- [[ SETTINGS ]] 
--- ใช้ Hex ของลิงก์ RAW เพื่อให้ HttpGet ดึงข้อความมาเช็คได้โดยตรง
-local secretLink = "68747470733a2f2f706173746562696e2e636f6d2f7261772f5678514845665364"
-local linkvertiseURL = "https://link-hub.net/5163393/x3LnNWqJVTKq"
-
-local function decode(data)
-    local str = ""
-    for i = 1, #data, 2 do
-        str = str .. string.char(tonumber(data:sub(i, i+1), 16))
-    end
-    return str
-end
-
-local keyURL = decode(secretLink)
-local keyVerified = false
-
--- [[ UTILS: Create UI Elements ]]
-local function createCorner(parent, radius)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = radius or UDim.new(0, 8)
-    corner.Parent = parent
-end
-
 local function createStroke(parent, color, thickness)
     local stroke = Instance.new("UIStroke")
     stroke.Color = color or Color3.fromRGB(255, 255, 255)
@@ -97,14 +74,8 @@ introText.Font = Enum.Font.GothamBold
 introText.TextTransparency = 1
 introText.Parent = introGui
 
--- Animation Intro
-task.spawn(function()
-    tweenService:Create(introText, TweenInfo.new(1), {TextTransparency = 0}):Play()
-    task.wait(1.5)
-    tweenService:Create(introText, TweenInfo.new(0.8, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 0, 0.15, 0), TextSize = 40}):Play()
-    task.wait(0.6)
-    tweenService:Create(keyFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0.1}):Play()
-end)
+
+
 
 -- [[ 2. MAIN SCRIPT UI ]]
 local screenGui = Instance.new("ScreenGui")
